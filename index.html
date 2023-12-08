@@ -10,19 +10,50 @@
 
   <body class="flex w-screen h-screen justify-center items-center">
     <div class="flex-col space-y-2 justify-center items-center">
-      <button
-        id="loginButton"
-        onclick=""
-        class="mx-auto rounded-md p-2 bg-purple-500 text-white"
-      >
-        Login with MetaMask
-      </button>
+      <button id="my-button">Connect Wallet</button>
       <p id="userWallet" class="text-lg text-gray-600 my-2"></p>
       <p id="ethAmount" class="text-lg text-gray-600 my-2"></p>
       <p id="bnbAmount" class="text-lg text-gray-600 my-2"></p>
     </div>
+    <script type="module">
+      import {
+        EthereumClient,
+        w3mConnectors,
+        w3mProvider,
+        WagmiCore,
+        WagmiCoreChains,
+        WagmiCoreConnectors,
+      } from "https://unpkg.com/@web3modal/ethereum";
 
-    <script>
+      import { Web3Modal } from "https://unpkg.com/@web3modal/html";
+
+      // Equivalent to importing from @wagmi/core
+      const { configureChains, createConfig } = WagmiCore;
+
+      // Equivalent to importing from viem/chains
+      const { mainnet, polygon, avalanche, arbitrum, bsc } = WagmiCoreChains;
+
+      // Equivalent to importing from @wagmi/core/providers
+      const { CoinbaseWalletConnector } = WagmiCoreConnectors;
+      const projectId = "4e72622197d34aa2dd506ee138c1f6ef";
+      const chains = [mainnet, bsc];
+      const { publicClient } = configureChains(chains, [
+        w3mProvider({ projectId }),
+      ]);
+      const wagmiConfig = createConfig({
+        autoConnect: true,
+        connectors: w3mConnectors({ projectId, chains }),
+        publicClient,
+      });
+      const ethereumClient = new EthereumClient(wagmiConfig, chains);
+      const web3modal = new Web3Modal({ projectId }, ethereumClient);
+      document.getElementById("my-button").addEventListener("click", () => {
+        web3modal.openModal();
+        console.log("console", web3modal.openModal());
+      });
+    </script>
+    <script></script>
+    <!-- <script>
       window.userWalletAddress = null;
       const loginButton = document.getElementById("loginButton");
       const userWallet = document.getElementById("userWallet");
@@ -96,6 +127,6 @@
       window.addEventListener("load", () => {
         toggleButton();
       });
-    </script>
+    </script> -->
   </body>
 </html>
