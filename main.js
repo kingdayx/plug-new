@@ -44,3 +44,7 @@ export const web3Modal = new Web3Modal(
   },
   ethereumClient
 );
+
+document.getElementById("my-button").addEventListener("click", () => {
+  web3Modal.openModal();
+});
