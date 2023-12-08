@@ -1,0 +1,101 @@
+<html>
+  <head>
+    <title>Web3 Metamask Login</title>
+    <link
+      href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.3/dist/web3.min.js"></script>
+  </head>
+
+  <body class="flex w-screen h-screen justify-center items-center">
+    <div class="flex-col space-y-2 justify-center items-center">
+      <button
+        id="loginButton"
+        onclick=""
+        class="mx-auto rounded-md p-2 bg-purple-500 text-white"
+      >
+        Login with MetaMask
+      </button>
+      <p id="userWallet" class="text-lg text-gray-600 my-2"></p>
+      <p id="ethAmount" class="text-lg text-gray-600 my-2"></p>
+      <p id="bnbAmount" class="text-lg text-gray-600 my-2"></p>
+    </div>
+
+    <script>
+      window.userWalletAddress = null;
+      const loginButton = document.getElementById("loginButton");
+      const userWallet = document.getElementById("userWallet");
+      const ethAmount = document.getElementById("ethAmount");
+      const bnbAmount = document.getElementById("bnbAmount");
+
+      function toggleButton() {
+        if (typeof window.ethereum !== "undefined") {
+          loginButton.addEventListener("click", loginWithMetaMask);
+        } else {
+          loginButton.innerText = "MetaMask is not installed";
+          loginButton.classList.remove("bg-purple-500", "text-white");
+          loginButton.classList.add(
+            "bg-gray-500",
+            "text-gray-100",
+            "cursor-not-allowed"
+          );
+          return false;
+        }
+      }
+
+      async function loginWithMetaMask() {
+        const accounts = await window.ethereum
+          .request({ method: "eth_requestAccounts" })
+          .catch((e) => {
+            console.error(e.message);
+            return;
+          });
+        if (!accounts) {
+          return;
+        }
+
+        window.userWalletAddress = accounts[0];
+        userWallet.innerText = window.userWalletAddress;
+
+        // Create a new Web3 instance for Ethereum
+        const web3Eth = new Web3(
+          "https://mainnet.infura.io/v3/3bd3441803f240968ffd27a80245816b"
+        );
+
+        // Get the ETH and BNB amounts from a specific address
+        const address = window.userWalletAddress;
+
+        web3Eth.eth.getBalance(address, (err, balance) => {
+          if (!err) {
+            ethAmount.innerText =
+              "ETH balance:" + web3Eth.utils.fromWei(balance, "ether");
+          } else {
+            console.error("Error fetching ETH balance:", err);
+          }
+        });
+
+        loginButton.innerText = "Sign out of MetaMask";
+        loginButton.removeEventListener("click", loginWithMetaMask);
+        setTimeout(() => {
+          loginButton.addEventListener("click", signOutOfMetaMask);
+        }, 200);
+      }
+
+      function signOutOfMetaMask() {
+        window.userWalletAddress = null;
+        userWallet.innerText = "";
+        loginButton.innerText = "Sign in with MetaMask";
+
+        loginButton.removeEventListener("click", signOutOfMetaMask);
+        setTimeout(() => {
+          loginButton.addEventListener("click", loginWithMetaMask);
+        }, 200);
+      }
+
+      window.addEventListener("load", () => {
+        toggleButton();
+      });
+    </script>
+  </body>
+</html>
