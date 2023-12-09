@@ -1,55 +1,13 @@
-import { createWeb3Modal, defaultConfig } from "@web3modal/ethers5";
+import { MetaMaskWallet } from "@thirdweb-dev/wallets";
 
-// @ts-expect-error 1. Get projectId
-const projectId = "4e72622197d34aa2dd506ee138c1f6ef";
-// if (!projectId) {
-//   throw new Error("VITE_PROJECT_ID is not set");
-// }
+const wallet = new MetaMaskWallet();
 
-// 2. Create wagmiConfig
-const chains = [
-  {
-    chainId: 1,
-    name: "Ethereum",
-    currency: "ETH",
-    explorerUrl: "https://etherscan.io",
-    rpcUrl: "https://cloudflare-eth.com",
-  },
-  {
-    chainId: 42161,
-    name: "Arbitrum",
-    currency: "ETH",
-    explorerUrl: "https://arbiscan.io",
-    rpcUrl: "https://arb1.arbitrum.io/rpc",
-  },
-];
-
-const ethersConfig = defaultConfig({
-  metadata: {
-    name: "Web3Modal",
-    description: "Web3Modal Laboratory",
-    url: "https://web3modal.com",
-    icons: ["https://avatars.githubusercontent.com/u/37784886"],
-  },
-  defaultChainId: 1,
-  rpcUrl: "https://cloudflare-eth.com",
-});
-
-// 3. Create modal
-const modal = createWeb3Modal({
-  ethersConfig,
-  projectId,
-  chains,
-  themeMode: "light",
-});
-
-// 4. Trigger modal programaticaly
-const openConnectModalBtn = document.getElementById("open-connect-modal");
-const openNetworkModalBtn = document.getElementById("open-network-modal");
-
-openConnectModalBtn.addEventListener("click", () => modal.open());
-openNetworkModalBtn.addEventListener("click", () =>
-  modal.open({ view: "Networks" })
-);
+document
+  .getElementById("open")
+  .addEventListener(
+    "click",
+    () => wallet.connect(),
+    console.log("connect", wallet)
+  );
 
 // 5. Alternatively use w3m component buttons (see index.html)
